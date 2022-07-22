@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.20.0", features = ["full"] }
 thirtyfour = "0.29.6"
-diesel = { version = "1.4.4", features = ["sqlite"] }
+diesel = { version = "1.4.4", features = ["sqlite", "chrono"] }
 dotenv = "0.15.0"
+chrono = "0.4"

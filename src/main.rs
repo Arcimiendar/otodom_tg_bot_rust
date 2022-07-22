@@ -1,31 +1,48 @@
-use thirtyfour::CapabilitiesHelper;
+#[macro_use]
+extern crate diesel;
+extern crate dotenv;
+
+
+pub mod lib;
+pub mod models;
+pub mod schema;
+
+use diesel::RunQueryDsl;
 use thirtyfour::prelude::*;
 use tokio;
 use dotenv::dotenv;
-use std::env;
 
-async fn build_chrome_driver() -> WebDriverResult<WebDriver> {
-    let mut caps = DesiredCapabilities::chrome();
-    caps.add_chrome_arg("--headless")?;
-    caps.add_chrome_arg("--disable-gpu")?;
-    caps.add_chrome_arg("--no-sandbox")?;
-    caps.add_chrome_arg("--disable-dev-shm-usage")?;
-
-    let driver = WebDriver::new(
-        &*env::var("SELENIUM_URL")
-            .unwrap_or(String::from("http://localhost:4444")), caps
-    ).await?;
-    Ok(driver)
-}
+use self::models::{User, Appartment, NewAppartment};
+use self::lib::{establish_connection, build_chrome_driver};
 
 
 #[tokio::main]
 async fn main() -> WebDriverResult<()>{
     dotenv().ok();
 
-    let driver = build_chrome_driver().await?;
+    use schema::appartment::dsl::*;
+    use schema::appartment;
+    let connection = establish_connection();
+
+    let app = NewAppartment {
+        price: Some(5),
+        czynsz: Some(5),
+        name: Some(String::from("hello")),
+        rooms: Some(5),
+        scrapped_at: None
+    };
+    diesel::insert_into(appartment::table)
+        .values(&app)
+        .execute(&connection)
+        .expect("error");
+
+    let apps = appartment.load::<Appartment>(&connection).expect("error!!");
+    for app in apps {
+        println!("{:?}", app);
+    }
+    // let driver = build_chrome_driver().await?;
 
 
-    driver.close().await?;
+    // driver.close().await?;
     Ok(())
 }
