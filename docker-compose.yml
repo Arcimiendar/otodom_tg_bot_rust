@@ -1,0 +1,7 @@
+version: "3.3"
+
+services:
+  chrome:
+    image: selenium/standalone-chrome:4.3.0-20220706
+    ports:
+      - "4444:4444"
