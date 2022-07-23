@@ -11,3 +11,6 @@ thirtyfour = "0.29.6"
 diesel = { version = "1.4.4", features = ["sqlite", "chrono"] }
 dotenv = "0.15.0"
 chrono = "0.4"
+teloxide = { version = "0.10", features = ["macros", "auto-send"] }
+log = "0.4"
+pretty_env_logger = "0.4"
