@@ -18,6 +18,7 @@ pub async fn start_answer(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Start => {
+            println!("{} subscribe", message.chat.id.0);
             register_user(message.chat.id.0 as i32)?;
             bot.send_message(
                 message.chat.id, "ща квартиры полетят"

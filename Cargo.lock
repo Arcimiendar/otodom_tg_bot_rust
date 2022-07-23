@@ -1392,6 +1392,7 @@ dependencies = [
  "chrono",
  "diesel",
  "dotenv",
+ "futures",
  "log",
  "pretty_env_logger",
  "teloxide",
