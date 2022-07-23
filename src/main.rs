@@ -1,11 +1,8 @@
-// #[macro_use]
-// extern crate diesel;
-// extern crate dotenv;
-
-// pub mod lib;
-// pub mod models;
-// pub mod schema;
-pub mod commands;
+#[macro_use]
+extern crate diesel;
+extern crate dotenv;
+mod lib;
+mod commands;
 
 use std::env;
 // use diesel::RunQueryDsl;

@@ -1,5 +1,6 @@
 use std::error::Error;
 use teloxide::{prelude::*, utils::command::BotCommands};
+use crate::lib::lib::register_user;
 
 #[derive(BotCommands, Clone)]
 #[command(rename = "lowercase", description = "These commands are supported:")]
@@ -17,8 +18,9 @@ pub async fn start_answer(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     match command {
         Command::Start => {
+            register_user(message.chat.id.0 as i32)?;
             bot.send_message(
-                message.chat.id, "Hello world!!!"
+                message.chat.id, "ща квартиры полетят"
             ).await?
         }
 
