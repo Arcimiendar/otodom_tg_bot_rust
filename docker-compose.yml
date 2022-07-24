@@ -12,3 +12,4 @@ services:
       - chrome
     volumes:
       - ./:/app/
+    command: bash -c "diesel migration run && tg_bot"
