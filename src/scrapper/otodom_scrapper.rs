@@ -52,8 +52,9 @@ pub async fn parse_continuous(url: String) {
                     }
                 }
             },
-            Err(_) => println!("scrapper failed for {}", url)
+            Err(_) => println!("failed scrapper for {}", &url)
         };
+        println!("finish scrapper for {}", &url);
         sleep(Duration::from_secs(60)).await;
     }
 }
@@ -61,8 +62,7 @@ pub async fn parse_continuous(url: String) {
 async fn parse_appartment(
     url: &String, driver: &WebDriver
 ) -> AnyResult<NewAppartment> {
-    let mut name = String::from("https://otodom.pl");
-    name.push_str(url);
+    let name = url.clone();
     driver.get(&name).await?;
 
     let parse_int = |text: String| -> AnyResult<i32> {
@@ -135,14 +135,14 @@ async fn _parse_appertments_and_save(
     appartments.reserve(links.len());
     for link in links {
         if let Some(link) = link {
-            if !appartment_already_exists(&link)? {
+            let mut full_link = String::from("https://otodom.pl");
+            full_link.push_str(&link);
+            if !appartment_already_exists(&full_link)? {
                 for _ in 0..5 {  // try to parse 5 time
                     let appartment =
-                        parse_appartment(&link, &driver).await;
+                        parse_appartment(&full_link, &driver).await;
                     if let Ok(app) = appartment {
-                        appartments.push(
-                            save_appartment(app)?
-                        );
+                        appartments.push(save_appartment(app)?);
                         break;
                     } else {
                         println!("error parse: {}", link);

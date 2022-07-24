@@ -93,12 +93,24 @@ pub fn appartment_already_exists(url: &String) -> AnyResult<bool> {
 }
 
 pub fn save_appartment(new_app: NewAppartment) -> AnyResult<Appartment> {
-    Ok(Appartment {
-        id: 5,
-        price: new_app.price,
-        czynsz: new_app.czynsz,
-        scrapped_at: new_app.scrapped_at,
-        rooms: new_app.rooms,
-        name: new_app.name
-    })
+    use crate::lib::schema::appartment;
+    let connection = establish_connection();
+    if let Some(connection) = connection {
+        let insert_result = diesel::insert_into(appartment::table)
+            .values(&new_app)
+            .execute(&connection);
+        match insert_result {
+            Ok(id) => Ok(Appartment {
+                id: id as i32,  // id is not critical. Could be skipped
+                price: new_app.price,
+                czynsz: new_app.czynsz,
+                scrapped_at: new_app.scrapped_at,
+                rooms: new_app.rooms,
+                name: new_app.name
+            }),
+            Err(_) => Err(Box::new(InsertError {}))
+        }
+    } else {
+        Err(Box::new(InsertError {}))
+    }
 }
