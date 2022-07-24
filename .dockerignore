@@ -1,0 +1,4 @@
+target
+scrapper.db
+Dockerfile
+docker-compose.yml
