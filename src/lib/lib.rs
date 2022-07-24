@@ -5,7 +5,9 @@ use std::{env, fmt};
 use std::error::Error;
 use std::fmt::Formatter;
 use diesel;
-use crate::lib::models::User;
+use crate::lib::models::{Appartment, NewAppartment, User};
+
+pub type AnyResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 
 #[derive(Debug, Clone)]
 struct InsertError;
@@ -49,7 +51,7 @@ pub fn establish_connection() -> Option<SqliteConnection> {
     SqliteConnection::establish(&database_url).ok()
 }
 
-pub fn register_user(user_id: i32) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub fn register_user(user_id: i32) -> AnyResult<()> {
     use crate::lib::schema::user;
     let connection = establish_connection();
     if let Some(connection) = connection {
@@ -65,7 +67,7 @@ pub fn register_user(user_id: i32) -> Result<(), Box<dyn Error + Send + Sync>> {
     }
 }
 
-pub fn get_all_users() -> Result<Box<Vec<User>>, Box<dyn Error + Send + Sync>> {
+pub fn get_all_users() -> AnyResult<Box<Vec<User>>> {
     use crate::lib::schema::user::dsl::*;
     let connection = establish_connection();
     if let Some(connection) = connection {
@@ -73,4 +75,30 @@ pub fn get_all_users() -> Result<Box<Vec<User>>, Box<dyn Error + Send + Sync>> {
     } else {
         Err(Box::new(QueryError {}))
     }
+}
+
+pub fn appartment_already_exists(url: &String) -> AnyResult<bool> {
+    use crate::lib::schema::appartment::dsl::*;
+    let connection = establish_connection();
+    if let Some(connection) = connection {
+        Ok(
+            appartment
+                .filter(name.eq(url))
+                .load::<Appartment>(&connection)?
+                .len() != 0
+        )
+    } else {
+        Err(Box::new(QueryError {}))
+    }
+}
+
+pub fn save_appartment(new_app: NewAppartment) -> AnyResult<Appartment> {
+    Ok(Appartment {
+        id: 5,
+        price: new_app.price,
+        czynsz: new_app.czynsz,
+        scrapped_at: new_app.scrapped_at,
+        rooms: new_app.rooms,
+        name: new_app.name
+    })
 }
